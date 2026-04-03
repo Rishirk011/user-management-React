@@ -65,8 +65,8 @@ function App(){
   }
 
   function updateUser(iD){
-    const user=users.find(({id})=>id===iD)
-      fetch('https://jsonplaceholder.typicode.com/users',
+    const user=users.find((user)=>user.id===iD)
+      fetch(`https://jsonplaceholder.typicode.com/users/${iD}`,
 
         {
           method:"PUT",
@@ -77,10 +77,8 @@ function App(){
         }
       )
       .then((res)=>res.json())
-      .then((data)=>{
-        setUsers([...users,data])
-        
-      })
+      
+      alert("updated successfully!")
   }
   
 
@@ -108,7 +106,7 @@ function App(){
             />
             </td>
             <td><Button intent="primary "
-            onClick={updateUser}>update</Button></td>
+            onClick={()=>updateUser(id)}>update</Button></td>
             <td><Button intent="danger"
             onClick={()=>removeUser(id)}>delete</Button> </td>
           </tr>
