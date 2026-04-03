@@ -18,12 +18,6 @@ function App(){
   
   },[])
 
-  function removeUser(id){
-    setUsers(users.filter((temp,index)=>
-      id!=index
-    ))
-  }
-
   function addUser(){
     
     const name=newName.trim();
@@ -51,10 +45,43 @@ function App(){
         
       })
     
-    };
-      
-
     }
+    }
+
+  function removeUser(id){
+    fetch(`https://jsonplaceholder.typicode.com/users/${id}`,
+      {
+        method:"DELETE"
+      }
+    )
+    .then((res)=>res.json())
+    .then(data=>setUsers((users)=> { return users.filter(user=>user.id!==id)}))
+  }
+
+  function onChangeHandler(id,key,value){
+    setUsers((users)=>{
+      return users.map(user=>user.id===id?{...user,[key]:value}:user)
+    });
+  }
+
+  function updateUser(iD){
+    const user=users.find(({id})=>id===iD)
+      fetch('https://jsonplaceholder.typicode.com/users',
+
+        {
+          method:"PUT",
+          body:JSON.stringify(user),
+          headers: {
+            "content-Type":"application/json; charset=UTF-8"
+          }
+        }
+      )
+      .then((res)=>res.json())
+      .then((data)=>{
+        setUsers([...users,data])
+        
+      })
+  }
   
 
   return <>
@@ -68,17 +95,22 @@ function App(){
         </tr>
       </thead>
       <tbody>
-        {users.map(({name,email,website,id},index)=>(
-          <tr key={index}>
+        {users.map(({name,email,website,id})=>(
+          <tr key={id}>
             <td>{id}</td>
             <td>{name}</td>
-            <td><EditableText value={email}/> </td>
-            <td><EditableText value={website}/>
+            <td><EditableText 
+            value={email} 
+            onChange={(value=>onChangeHandler(id,'email',value))}/> 
+            </td>
+            <td><EditableText value={website}
+             onChange={(value=>onChangeHandler(id,'website',value))}
+            />
             </td>
             <td><Button intent="primary "
-            >update</Button></td>
+            onClick={updateUser}>update</Button></td>
             <td><Button intent="danger"
-            onClick={()=>removeUser(index)}>delete</Button> </td>
+            onClick={()=>removeUser(id)}>delete</Button> </td>
           </tr>
         ))}
       </tbody>
