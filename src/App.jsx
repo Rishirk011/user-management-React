@@ -8,15 +8,24 @@ function App(){
   let [newEmail,setNewEmail]=useState("");
   let [newWebsite,setNewWebsite]=useState("");
 
-  let[users,setUsers]=useState([]);
+  let[users,setUsers]=useState(()=>{
+    let locItems=localStorage.getItem("users");
+    return locItems?JSON.parse(locItems):[]
+  });
+  useEffect(()=>{
+    if(!users){
+      fetch('https://jsonplaceholder.typicode.com/users')
+      .then((res)=>res.json())
+      .then((data)=>{
+        setUsers(data)
+      });
+    }
+  },[])
 
   useEffect(()=>{
-    
-    fetch('https://jsonplaceholder.typicode.com/users')
-    .then((res)=>res.json())
-    .then((data)=>setUsers(data));
-  
-  },[])
+    let items=JSON.stringify(users);
+    localStorage.setItem("users",items);
+  },[users])
 
   function addUser(){
     
